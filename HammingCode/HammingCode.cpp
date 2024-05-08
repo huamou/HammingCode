@@ -44,11 +44,23 @@ void HammingCode::backtracking(unsigned long n, unsigned long m, unsigned long s
 		arr.pop_back();             // 回溯，移除当前元素，尝试其他可能的元素
 	}
 }
-int HammingCode::getscode()
+void HammingCode::setoptions()
 {
 	int l = 0;
 	int k = 8;
-	std::cout << "请选择偶校验【0】或奇校验【1】:" << std::endl;
+	k = 8;
+	std::cout << "请选择编码【0】或解码【1】:" << std::endl;
+	while (k != '\r')
+	{
+		k = _getch();
+		if (k == '0' || k == '1')
+		{
+			isEncrypt = (k == '0');
+			_putch(k);
+		}
+	}
+	k = 8;
+	std::cout << std::endl << "请选择偶校验【0】或奇校验【1】:" << std::endl;
 	while (k != '\r')
 	{
 		k = _getch();
@@ -58,12 +70,20 @@ int HammingCode::getscode()
 			_putch(k);
 		}
 	}
-	if (isEVEN)
-		std::cout << std::endl << "你选择了偶校验" << std::endl;
+	if (isEncrypt)
+		std::cout << std::endl << "你选择了编码";
 	else
-		std::cout << std::endl << "你选择了奇校验" << std::endl;
-	std::cout << "请输入原始信息【0】或【1】:" << std::endl;
-	k = 8;
+		std::cout << std::endl << "你选择了解码";
+	if (isEVEN)
+		std::cout << ",偶校验" << std::endl;
+	else
+		std::cout << ",奇校验" << std::endl;
+}
+void HammingCode::getcode(vector<bool>& incode)
+{
+	int l = 0;
+	int k = 8;
+	std::cout << "请输入二进制【0】或【1】:" << std::endl;
 	while (k != '\r')
 	{
 		k = _getch();
@@ -74,44 +94,59 @@ int HammingCode::getscode()
 			_putch(k);
 			l++;
 			k = k - '0';
-			Scode.push_back(k);
+			incode.push_back(k);
 		}
 	}
-	std::cout << std::endl << "你输入的原始信息是:" << std::endl;
-	for (k = 0; k < Scode.size(); k++)
-	{
-		std::cout << Scode[k];
-		l--;
-		if ((l % 4 == 0) && (l != 0))
-			std::cout << "'";
-	}
+	//std::cout << std::endl << "你输入的信息是:" << std::endl;
+	//for (k = 0; k < incode.size(); k++)
+	//{
+	//	std::cout << incode[k];
+	//	l--;
+	//	if ((l % 4 == 0) && (l != 0))
+	//		std::cout << "'";
+	//}
 	std::cout << std::endl;
-	return 0;
+	return;
 }
-int HammingCode::ccodelen()
+void HammingCode::getcodelen()
 {
-	int k = 1;
-	int n = (int)Scode.size();
-	while (pow(2, k) < n + k + 1)
-		k++;
-	return k;
+	if (isEncrypt)
+	{
+		int k = 1;
+		int n = (int)Scode.size();
+		ScodeLen = n;
+		while (pow(2, k) < n + k + 1)
+			k++;
+		KcodeLen = k;
+		HcodeLen = k + n;
+	}
+	else
+	{
+		int k = 1;
+		HcodeLen = (int)Hcode.size();
+		int n = HcodeLen - k;
+		while (pow(2, k) < n + k + 1)
+		{
+			k++;
+			n = HcodeLen - k;
+		}
+		KcodeLen = k;
+		ScodeLen = HcodeLen - k;
+	}
 }
-int HammingCode::scodelen()
+void HammingCode::phcode()
 {
-	int n = (int)Scode.size();
-	return n;
-}
-int HammingCode::phcode()
-{
-	Hcode = Scode;
+	if(isEncrypt)
+		Hcode = Scode;
 	int i = 0;
 	int p = 0;
-	for (i = 0; i < ccodelen(); i++)
-	{
-		p = (int)pow(2, i) - 1;
-		Hcode.insert(Hcode.begin() + p, 0);
-	}
-	int l = (int)Hcode.size();
+	if (isEncrypt)
+		for (i = 0; i < KcodeLen; i++)
+		{
+			p = (int)pow(2, i) - 1;
+			Hcode.insert(Hcode.begin() + p, 0);
+		}
+	int l = HcodeLen;
 	std::cout << "预处理的编码:" << std::endl;
 	for (i = 0; i < Hcode.size(); i++)
 	{
@@ -121,17 +156,18 @@ int HammingCode::phcode()
 			std::cout << "'";
 	}
 	std::cout << std::endl;
-	return 0;
+	return ;
 }
 bool static cmp(int a, int b)
 {
 	return a < b;
 }
-int HammingCode::hamming()
+void HammingCode::hamming()
 {
-	phcode();
-	int k = ccodelen();
-	int l = (int)Hcode.size();
+	//if (isEncrypt)
+		phcode();
+	int k = KcodeLen;
+	int l = HcodeLen;
 	unsigned long  p = 0;
 	for (int i = 1; i <= k; i++)
 		p = p + cnm(k, i);
@@ -166,7 +202,8 @@ int HammingCode::hamming()
 			std::cout << ":" << s << std::endl;
 			for (int i = 0; i < arrs[g].size(); i++)
 			{
-				Hcode[(unsigned __int64)pow(2, arrs[g][i] - 1) - 1] = Hcode[(unsigned __int64)pow(2, arrs[g][i] - 1) - 1] ^ Hcode[s - 1];
+				if(gc>1)
+					Hcode[(unsigned __int64)pow(2, arrs[g][i] - 1) - 1] = Hcode[(unsigned __int64)pow(2, arrs[g][i] - 1) - 1] ^ Hcode[s - 1];
 				groups[arrs[g][i] - 1].push_back((int)s);
 			}
 		}
@@ -191,9 +228,9 @@ int HammingCode::hamming()
 			Hcode[(unsigned __int64)pow(2, i - 1) - 1] = !Hcode[(unsigned __int64)pow(2, i - 1) - 1];
 	delete[] groups;
 	delete[] arrs;
-	return 0;
+	return ;
 }
-int HammingCode::puthcode()
+void HammingCode::putcode()
 {
 	int i;
 	int l = (int)Hcode.size();
@@ -204,19 +241,26 @@ int HammingCode::puthcode()
 		if ((l % 4 == 0) && (l != 0))
 			std::cout << "'";
 	}
-	return 0;
+	return ;
 }
 int main()
 {
 	HammingCode hc;
-	std::cout << "汉明码(HammingCode)演示程序 v0.01 2024.5.1 leu9981" << std::endl;
-	hc.getscode();
-	int k = hc.ccodelen();
-	std::cout << "原始信息长度 n=" << hc.scodelen() << " 效验位长度 k=" << k << " 汉明码总长度 l=" << k + hc.scodelen() << std::endl;
+	std::cout << "汉明码(HammingCode)演示程序 v0.02 2024.5.1 leu9981" << std::endl;
+	hc.setoptions();
+	if (hc.isEncrypt)
+		hc.getcode(hc.Scode);
+	else
+	{
+		hc.getcode(hc.iHcode);
+		hc.Hcode = hc.iHcode;
+	}
+	hc.getcodelen();
+	std::cout << "原始信息长度 n=" << hc.ScodeLen << " 效验位长度 k=" << hc.KcodeLen << " 汉明码总长度 l=" << hc.HcodeLen << std::endl;
 	hc.hamming();
 	std::cout << "汉明码=";
-	hc.puthcode();
+	hc.putcode();
 	std::cout << std::endl << "按任意键退出" << std::endl;
-	k=_getch();
+	int k = _getch();
 	return 0;
 }
