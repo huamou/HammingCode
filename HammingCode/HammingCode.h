@@ -20,12 +20,12 @@ public:
 	int  HcodeLen = 0;	                //汉明码长度 l=n+k
 public:
 	unsigned long cnm(int n, int m);     //计算n取m组合数
-	void backtracking(unsigned long  n, unsigned long  m, unsigned  long stackindex, unsigned long& p); //回溯法生成从 1 到 n 的数字中长度为 m 的所有组合
+	void combine(unsigned long  n, unsigned long  m, unsigned  long stackindex, unsigned long& p); //回溯法生成从 1 到 n 的数字中长度为 m 的所有组合
 	void getcode(vector<bool> &incode) const;//输入信息:可能是源信息，也可能是编码后的汉明码
 	void setoptions();//设置奇/偶效验，编码/解码
 	void getcodelen();//求 n k l	  ScodeLen KcodeLen HcodeLen
 	void phcode();//生产未效验的汉明码 校验位初设为0	
-	void hamming();//求解汉明码 校验位求解	
-	void putcode();//输出汉明码和源信息
+	void hamming();//求解汉明码 校验位求解
 	void correctcode();//汉明码检错
+	void putcode();//输出汉明码和源信息
 };

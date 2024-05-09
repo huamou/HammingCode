@@ -16,20 +16,19 @@ unsigned long HammingCode::cnm(int n, int m)
 	p = np / (mp * nmp);
 	return p;
 }
-void HammingCode::backtracking(unsigned long n, unsigned long m, unsigned long stackindex, unsigned long& p)
+void HammingCode::combine(unsigned long n, unsigned long m, unsigned long stackindex, unsigned long& p)
 {
 	if (arr.size() == m)
 	{
 		// 如果数组大小等于m，表示找到了一个组合
-		arrs[p] = arr;
-		p++;
+		arrs[p++] = arr;		
 		return;
 	}
 	// 使用回溯法生成组合
 	for (unsigned long i = stackindex; i <= n; ++i)
 	{
 		arr.push_back(i);           // 将当前元素加入组合
-		backtracking(n, m, i + 1, p);  // 递归调用，继续生成下一个元素
+		combine(n, m, i + 1, p);  // 递归调用，继续生成下一个元素
 		arr.pop_back();             // 回溯，移除当前元素，尝试其他可能的元素
 	}
 }
@@ -233,6 +232,45 @@ void HammingCode::hamming()
 	delete[] arrs;
 	return;
 }
+void HammingCode::correctcode()
+{
+	std::cout << "检测位:" << std::endl;
+	int ecc = 0;
+	int ebit = 0;//出错检测位位数
+	vector<int> pecc;
+	for (int i = 0; i < KcodeLen; i++)
+	{
+		std::cout << "P" << pow(2, i) << "=" << Hcode[(unsigned __int64)pow(2, i) - 1] << std::endl;
+		if (Hcode[(unsigned __int64)pow(2, i) - 1] != 0)
+		{
+			ecc += (int)pow(2, i);
+			pecc.push_back((int)pow(2, i));
+			ebit++;
+		}
+	}
+	switch (ebit)
+	{
+	case 0://没有错误
+		break;
+	case 1://1位检测位出错，修改校验位
+		std::cout << pecc[0] << "校验位出错" << std::endl;
+		iHcode[(unsigned __int64)ecc - 1] = !iHcode[(unsigned __int64)ecc - 1];
+		break;
+	default://多位检测位出错，几组共有源信息位出错
+		if (ecc <= HcodeLen)//共有位出错，修改数据位
+		{
+			std::cout << "第" << ecc << "位数据位出错,成功纠错" << std::endl;
+			iHcode[(unsigned __int64)ecc - 1] = !iHcode[(unsigned __int64)ecc - 1];
+		}
+		else
+		{
+			std::cout << "多位校验位出错,但无法纠错" << std::endl;
+		}
+		break;
+	}
+	Hcode = iHcode;
+	return;
+}
 void HammingCode::putcode()
 {
 	int i;
@@ -271,45 +309,6 @@ void HammingCode::putcode()
 				std::cout << "'";
 		}
 	}
-	return;
-}
-void HammingCode::correctcode()
-{
-	std::cout << "检测位:" << std::endl;
-	int ecc = 0;
-	int ebit = 0;//出错检测位位数
-	vector<int> pecc;
-	for (int i = 0; i < KcodeLen; i++)
-	{
-		std::cout << "P" << pow(2, i) << "=" << Hcode[(unsigned __int64)pow(2, i) - 1] << std::endl;
-		if (Hcode[(unsigned __int64)pow(2, i) - 1] != 0)
-		{
-			ecc += (int)pow(2, i);
-			pecc.push_back((int)pow(2, i));
-			ebit++;
-		}
-	}
-	switch (ebit)
-	{
-	case 0://没有错误
-		break;
-	case 1://1位检测位出错，修改校验位
-		std::cout << pecc[0] << "校验位出错" << std::endl;
-		iHcode[(unsigned __int64)ecc - 1] = !iHcode[(unsigned __int64)ecc - 1];
-		break;
-	default://多位检测位出错，几组共有源信息位出错
-		if (ecc <= HcodeLen)//共有位出错，修改数据位
-		{
-			std::cout << "第" << ecc << "位数据位出错,成功纠错" << std::endl;
-			iHcode[(unsigned __int64)ecc - 1] = !iHcode[(unsigned __int64)ecc - 1];
-		}
-		else
-		{
-			std::cout << "多位校验位出错,但无法纠错" << std::endl;
-		}
-		break;
-	}
-	Hcode = iHcode;
 	return;
 }
 int main()
