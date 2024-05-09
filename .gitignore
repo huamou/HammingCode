@@ -1,0 +1,5 @@
+bin/
+x64/
+release/
+debug/
+temp/
