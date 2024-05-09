@@ -21,19 +21,8 @@ void HammingCode::backtracking(unsigned long n, unsigned long m, unsigned long s
 	if (arr.size() == m)
 	{
 		// 如果数组大小等于m，表示找到了一个组合
-		for (unsigned long j = 0; j < m; ++j)
-		{
-			if (j == m - 1) {
-				// 如果是最后一个元素，换行输出
-				//cout << "  " << arr[j] << endl;
-				arrs[p] = arr;
-				p++;
-			}
-			else {
-				// 否则输出元素并添加空格
-				//cout << "  " << arr[j];
-			}
-		}
+		arrs[p] = arr;
+		p++;
 		return;
 	}
 	// 使用回溯法生成组合
@@ -49,7 +38,7 @@ void HammingCode::setoptions()
 	int l = 0;
 	int k = 8;
 	k = 8;
-	std::cout << "请选择编码【0】或解码【1】: " ;
+	std::cout << "请选择编码【0】或解码【1】: ";
 	while (k != '\r')
 	{
 		k = _getch();
@@ -79,7 +68,16 @@ void HammingCode::setoptions()
 	else
 		std::cout << ",奇校验" << std::endl;
 }
-void HammingCode::getcode(vector<bool>& incode)
+bool static isPower2(size_t N)//N为2的m次方
+{
+	for (int i = 0; (unsigned __int64)pow(2, i) <= N; i++)
+	{
+		if ((unsigned __int64)pow(2, i) == N)
+			return true;
+	}
+	return false;
+}
+void HammingCode::getcode(vector<bool>& incode) const
 {
 	int l = 0;
 	int k = 8;
@@ -98,6 +96,19 @@ void HammingCode::getcode(vector<bool>& incode)
 		}
 	}
 	std::cout << std::endl;
+	if (!isEncrypt)
+	{
+		if (incode.size() < 3)//解码数据必须大于等于3位 最小n=1 k=2 l=3
+		{
+			std::cout << "解码数据必须大于等于3位" << std::endl;
+			exit(-1);
+		}
+		if (isPower2(incode.size()))//输入汉明码是2的n次方，最后一位数据可以去掉
+		{
+			std::cout << "输入解码数据为2的n次方，去掉最后一位数据" << std::endl;
+			incode.pop_back();
+		}
+	}
 	return;
 }
 void HammingCode::getcodelen()
@@ -128,7 +139,7 @@ void HammingCode::getcodelen()
 }
 void HammingCode::phcode()
 {
-	if(isEncrypt)
+	if (isEncrypt)
 		Hcode = Scode;
 	int i = 0;
 	int p = 0;
@@ -148,7 +159,7 @@ void HammingCode::phcode()
 			std::cout << "'";
 	}
 	std::cout << std::endl;
-	return ;
+	return;
 }
 bool static cmp(int a, int b)
 {
@@ -157,7 +168,7 @@ bool static cmp(int a, int b)
 void HammingCode::hamming()
 {
 	//if (isEncrypt)
-		phcode();
+	phcode();
 	int k = KcodeLen;
 	int l = HcodeLen;
 	unsigned long  p = 0;
@@ -194,8 +205,8 @@ void HammingCode::hamming()
 			std::cout << ":" << s << std::endl;
 			for (int i = 0; i < arrs[g].size(); i++)
 			{
-				if (gc > 1)				
-					Hcode[(unsigned __int64)pow(2, arrs[g][i] - 1) - 1] = Hcode[(unsigned __int64)pow(2, arrs[g][i] - 1) - 1] ^ Hcode[s - 1];			
+				if (gc > 1)
+					Hcode[(unsigned __int64)pow(2, arrs[g][i] - 1) - 1] = Hcode[(unsigned __int64)pow(2, arrs[g][i] - 1) - 1] ^ Hcode[s - 1];
 				groups[arrs[g][i] - 1].push_back((int)s);
 			}
 		}
@@ -220,7 +231,7 @@ void HammingCode::hamming()
 			Hcode[(unsigned __int64)pow(2, i - 1) - 1] = !Hcode[(unsigned __int64)pow(2, i - 1) - 1];
 	delete[] groups;
 	delete[] arrs;
-	return ;
+	return;
 }
 void HammingCode::putcode()
 {
@@ -248,8 +259,8 @@ void HammingCode::putcode()
 	else
 	{
 		for (i = KcodeLen; i > 0; i--)
-		{			
-			Hcode.erase(Hcode.begin() + pow(2, i - 1) - 1);
+		{
+			Hcode.erase(Hcode.begin() + (unsigned __int64)pow(2, i - 1) - 1);
 		}
 		l = (int)Hcode.size();
 		for (i = 0; i < Hcode.size(); i++)
@@ -260,43 +271,43 @@ void HammingCode::putcode()
 				std::cout << "'";
 		}
 	}
-	return ;
+	return;
 }
 void HammingCode::correctcode()
-{	
-	std::cout << "检测位=" << std::endl;
-	int ecc  = 0;
+{
+	std::cout << "检测位:" << std::endl;
+	int ecc = 0;
 	int ebit = 0;//出错检测位位数
 	vector<int> pecc;
 	for (int i = 0; i < KcodeLen; i++)
 	{
-		std::cout << "P" << pow(2, i) <<"="<< Hcode[pow(2, i) - 1] << std::endl;
-		if (Hcode[pow(2, i) - 1] != 0)
+		std::cout << "P" << pow(2, i) << "=" << Hcode[(unsigned __int64)pow(2, i) - 1] << std::endl;
+		if (Hcode[(unsigned __int64)pow(2, i) - 1] != 0)
 		{
-			ecc += pow(2, i);
-			pecc.push_back(pow(2, i));
+			ecc += (int)pow(2, i);
+			pecc.push_back((int)pow(2, i));
 			ebit++;
 		}
 	}
 	switch (ebit)
 	{
-		case 0://没有错误
-			break ;
-		case 1://1位检测位出错，修改校验位
-			std::cout << pecc[0]<< "校验位出错" << std::endl;
+	case 0://没有错误
+		break;
+	case 1://1位检测位出错，修改校验位
+		std::cout << pecc[0] << "校验位出错" << std::endl;
+		iHcode[(unsigned __int64)ecc - 1] = !iHcode[(unsigned __int64)ecc - 1];
+		break;
+	default://多位检测位出错，几组共有源信息位出错
+		if (ecc <= HcodeLen)//共有位出错，修改数据位
+		{
+			std::cout << "第" << ecc << "位数据位出错,成功纠错" << std::endl;
 			iHcode[(unsigned __int64)ecc - 1] = !iHcode[(unsigned __int64)ecc - 1];
-			break ;
-		default://多位检测位出错，几组共有源信息位出错
-			if (ecc <= HcodeLen)//共有位出错，修改数据位
-			{				
-				std::cout <<"第" << ecc << "位数据位出错,成功纠错" << std::endl;
-				iHcode[(unsigned __int64)ecc - 1] = !iHcode[(unsigned __int64)ecc - 1];
-			}
-			else
-			{
-				std::cout << "多位校验位出错,但无法纠错" << std::endl;
-			}
-			break;
+		}
+		else
+		{
+			std::cout << "多位校验位出错,但无法纠错" << std::endl;
+		}
+		break;
 	}
 	Hcode = iHcode;
 	return;
@@ -314,9 +325,9 @@ int main()
 		hc.Hcode = hc.iHcode;
 	}
 	hc.getcodelen();
-	std::cout << "源信息长度 n=" << hc.ScodeLen << " 效验位长度 k=" << hc.KcodeLen << " 汉明码总长度 l=" << hc.HcodeLen << std::endl;
+	std::cout << "源信息长度 n=" << hc.ScodeLen << " 校验位长度 k=" << hc.KcodeLen << " 汉明码总长度 l=" << hc.HcodeLen << std::endl;
 	hc.hamming();
-	if (!hc.isEncrypt)	
+	if (!hc.isEncrypt)
 		hc.correctcode();
 	hc.putcode();
 	std::cout << std::endl << "按任意键退出" << std::endl;
