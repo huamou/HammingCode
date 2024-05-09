@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>D:\教学\《计算机组成原理》\HammingCode\x64\Release\HammingCode.exe</FullPath>
+      <FullPath>D:\temp\Hamming\x64\Release\HammingCode.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

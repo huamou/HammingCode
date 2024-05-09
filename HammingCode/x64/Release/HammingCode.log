@@ -1,4 +1,13 @@
 ﻿  HammingCode.cpp
+D:\temp\Hamming\HammingCode\HammingCode.cpp(252,35): warning C4244: “参数”: 从“double”转换到“const __int64”，可能丢失数据
+D:\temp\Hamming\HammingCode\HammingCode.cpp(273,57): warning C4244: “参数”: 从“double”转换到“unsigned __int64”，可能丢失数据
+D:\temp\Hamming\HammingCode\HammingCode.cpp(274,23): warning C4244: “参数”: 从“double”转换到“unsigned __int64”，可能丢失数据
+D:\temp\Hamming\HammingCode\HammingCode.cpp(276,14): warning C4244: “+=”: 从“double”转换到“int”，可能丢失数据
+D:\temp\Hamming\HammingCode\HammingCode.cpp(277,22): warning C4244: “参数”: 从“double”转换到“_Ty”，可能丢失数据
+D:\temp\Hamming\HammingCode\HammingCode.cpp(277,22): warning C4244:         with
+D:\temp\Hamming\HammingCode\HammingCode.cpp(277,22): warning C4244:         [
+D:\temp\Hamming\HammingCode\HammingCode.cpp(277,22): warning C4244:             _Ty=int
+D:\temp\Hamming\HammingCode\HammingCode.cpp(277,22): warning C4244:         ]
   正在生成代码
   已完成代码的生成
-  HammingCode.vcxproj -> D:\教学\《计算机组成原理》\HammingCode\x64\Release\HammingCode.exe
+  HammingCode.vcxproj -> D:\temp\Hamming\x64\Release\HammingCode.exe
