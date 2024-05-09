@@ -166,7 +166,6 @@ bool static cmp(int a, int b)
 }
 void HammingCode::hamming()
 {
-	//if (isEncrypt)
 	phcode();
 	int k = KcodeLen;
 	int l = HcodeLen;
@@ -179,7 +178,7 @@ void HammingCode::hamming()
 	for (int g = 1; g <= k; g++)//组合数 1组独有，2组共有，3组共有...,k组共有
 	{
 		arr.clear();
-		backtracking(k, g, 1, p);
+		combine(k, g, 1, p);
 	}
 	std::cout << "汉明码分组过程:" << std::endl;
 	int  gc = 0;
