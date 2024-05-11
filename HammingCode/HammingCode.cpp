@@ -249,6 +249,8 @@ void HammingCode::hamming()
 			Hcode[(unsigned __int64)pow(2, i - 1) - 1] = !Hcode[(unsigned __int64)pow(2, i - 1) - 1];
 	delete[] groups;
 	delete[] arrs;
+	if (getEncrypt())//如果是解码
+		correctcode();//纠错
 	return;
 }
 void HammingCode::correctcode()
@@ -352,15 +354,13 @@ int  HammingCode::getHcodeLen() const
 }
 int  main()
 {
-	std::cout << "汉明码(HammingCode)演示程序 v0.03 2024.5.1 leu9981@重庆科技学院" << std::endl;
+	std::cout << "汉明码(HammingCode)演示程序 v0.03 2024.5.1 leu9981" << std::endl;
 	HammingCode hc;	
 	hc.setoptions();//设置 编码/解码  奇/偶校验
 	hc.getcode();//输入二进制系列	
 	hc.getcodelen();//求解n k  
 	std::cout << "源信息长度 n=" << hc.getScodeLen() << " 校验位长度 k=" << hc.getKcodeLen() << " 汉明码总长度 n+k=" << hc.getHcodeLen() << std::endl;
 	hc.hamming();//进行 编码/解码
-	if (!hc.getEncrypt())//如果是解码
-		hc.correctcode();//纠错
 	hc.putcode();//输出源信息和正确编码
 	std::cout << std::endl << "按任意键退出" << std::endl;
 	int k = _getch();
