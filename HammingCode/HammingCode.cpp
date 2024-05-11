@@ -1,18 +1,17 @@
 ﻿/*
-Last-Modified:2024-5-10 
-Copyright (C)2024 leu9981 <hgjsj@qq.com>
-This program is free software : you can redistribute it and /or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.If not, see < https://www.gnu.org/licenses/>.
+//Copyright (C)2024 leu9981 <hgjsj@qq.com>
+//This program is free software : you can redistribute it and /or modify
+//it under the terms of the GNU General Public License as published by
+//the Free Software Foundation, either version 3 of the License, or
+//(at your option) any later version.
+//
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with this program.If not, see < https://www.gnu.org/licenses/>.
 */
 #include <iostream>
 #include "HammingCode.h"
@@ -79,7 +78,7 @@ void HammingCode::setoptions()
 	else
 		std::cout << ",奇校验" << std::endl;
 }
-bool static isPower2(size_t N)//N为2的m次方
+bool static isPower2(size_t N)//判断N为2的m次方
 {
 	for (int i = 0; (unsigned __int64)pow(2, i) <= N; i++)
 	{
@@ -94,6 +93,7 @@ void HammingCode::getcode()
 	int l = 0;
 	int k = 8;
 	std::cout << "请输入二进制【0】或【1】:" << std::endl;
+	std::cout << "0001 0002 0003 0004 0005 0006 0007 0008 0009 0010 0011 0012 0013 0014 0015 0016" << std::endl;
 	while (k != '\r')
 	{
 		k = _getch();
@@ -180,7 +180,7 @@ void HammingCode::phcode()
 	std::cout << std::endl;
 	return;
 }
-bool static cmp(int a, int b)
+bool static cmp(int a, int b)//sort判断函数
 {
 	return a < b;
 }
@@ -350,18 +350,18 @@ int  HammingCode::getHcodeLen() const
 {
 	return HcodeLen;
 }
-int main()
+int  main()
 {
-	HammingCode hc;
-	std::cout << "汉明码(HammingCode)演示程序 v0.03 2024.5.1 leu9981" << std::endl;
-	hc.setoptions();
-	hc.getcode();	
-	hc.getcodelen();
+	std::cout << "汉明码(HammingCode)演示程序 v0.03 2024.5.1 leu9981@重庆科技学院" << std::endl;
+	HammingCode hc;	
+	hc.setoptions();//设置 编码/解码  奇/偶校验
+	hc.getcode();//输入二进制系列	
+	hc.getcodelen();//求解n k  
 	std::cout << "源信息长度 n=" << hc.getScodeLen() << " 校验位长度 k=" << hc.getKcodeLen() << " 汉明码总长度 n+k=" << hc.getHcodeLen() << std::endl;
-	hc.hamming();
-	if (!hc.getEncrypt())
-		hc.correctcode();
-	hc.putcode();
+	hc.hamming();//进行 编码/解码
+	if (!hc.getEncrypt())//如果是解码
+		hc.correctcode();//纠错
+	hc.putcode();//输出源信息和正确编码
 	std::cout << std::endl << "按任意键退出" << std::endl;
 	int k = _getch();
 	return 0;

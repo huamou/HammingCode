@@ -16,9 +16,9 @@ private:
 	bool isEncrypt = true;              //编码:输入源信息生成汉明码 
 	int  ScodeLen = 0;                  //源信息长度 n 
 	int  KcodeLen = 0;                  //效验码位数 k	pow(2, k) >= n + k + 1
-	int  HcodeLen = 0;	                //汉明码长度 l=n+k
+	int  HcodeLen = 0;	                //汉明码长度 n+k
 public:
-	unsigned long cnm(int n, int m);     //计算n取m组合数
+	unsigned long cnm(int n, int m);    //计算n取m组合数
 	void combine(unsigned long  n, unsigned long  m, unsigned  long stackindex, unsigned long& p); //回溯法生成从 1 到 n 的数字中长度为 m 的所有组合
 	void getcode();//输入信息:可以是源信息，也可以是编码后的汉明码
 	void setoptions();//设置奇/偶效验，编码/解码
@@ -28,9 +28,9 @@ public:
 	void correctcode();//汉明码检错
 	void putcode();//输出汉明码和源信息
 	//以下为属性输入/输出函数
-	bool getEVEN() const;
-	bool getEncrypt() const;
-	int  getScodeLen() const;
-	int  getKcodeLen() const;
-	int  getHcodeLen() const;
+	bool getEVEN() const;    //获取奇/偶校验
+	bool getEncrypt() const; //获取编码/解码
+	int  getScodeLen() const;//获取源信息长度
+	int  getKcodeLen() const;//获取效验码长度
+	int  getHcodeLen() const;//获取汉明码长度
 };
