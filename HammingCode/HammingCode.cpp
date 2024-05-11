@@ -1,9 +1,21 @@
-﻿// HammingCode.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
-//
+﻿/*
+Last-Modified:2024-5-10 
+Copyright (C)2024 leu9981 <hgjsj@qq.com>
+This program is free software : you can redistribute it and /or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.If not, see < https://www.gnu.org/licenses/>.
+*/
 #include <iostream>
 #include "HammingCode.h"
-
 unsigned long HammingCode::cnm(int n, int m)
 {
 	unsigned long p = 1, np = 1, mp = 1, nmp = 1;
@@ -76,8 +88,9 @@ bool static isPower2(size_t N)//N为2的m次方
 	}
 	return false;
 }
-void HammingCode::getcode(vector<bool>& incode) const
+void HammingCode::getcode() 
 {
+	vector<bool> incode;
 	int l = 0;
 	int k = 8;
 	std::cout << "请输入二进制【0】或【1】:" << std::endl;
@@ -107,6 +120,13 @@ void HammingCode::getcode(vector<bool>& incode) const
 			std::cout << "输入解码数据为2的n次方，去掉最后一位数据" << std::endl;
 			incode.pop_back();
 		}
+	}
+	if (isEncrypt)
+		Scode = incode;
+	else
+	{
+		Hcode = incode;
+		iHcode = Hcode;
 	}
 	return;
 }
@@ -310,22 +330,36 @@ void HammingCode::putcode()
 	}
 	return;
 }
+bool HammingCode::getEVEN() const
+{
+	return isEVEN;
+}
+bool HammingCode::getEncrypt() const
+{
+	return isEncrypt;
+}
+int  HammingCode::getScodeLen() const
+{
+	return ScodeLen;
+}
+int  HammingCode::getKcodeLen() const
+{
+	return KcodeLen;
+}
+int  HammingCode::getHcodeLen() const
+{
+	return HcodeLen;
+}
 int main()
 {
 	HammingCode hc;
-	std::cout << "汉明码(HammingCode)演示程序 v0.02 2024.5.1 leu9981" << std::endl;
+	std::cout << "汉明码(HammingCode)演示程序 v0.03 2024.5.1 leu9981" << std::endl;
 	hc.setoptions();
-	if (hc.isEncrypt)
-		hc.getcode(hc.Scode);
-	else
-	{
-		hc.getcode(hc.iHcode);
-		hc.Hcode = hc.iHcode;
-	}
+	hc.getcode();	
 	hc.getcodelen();
-	std::cout << "源信息长度 n=" << hc.ScodeLen << " 校验位长度 k=" << hc.KcodeLen << " 汉明码总长度 l=" << hc.HcodeLen << std::endl;
+	std::cout << "源信息长度 n=" << hc.getScodeLen() << " 校验位长度 k=" << hc.getKcodeLen() << " 汉明码总长度 n+k=" << hc.getHcodeLen() << std::endl;
 	hc.hamming();
-	if (!hc.isEncrypt)
+	if (!hc.getEncrypt())
 		hc.correctcode();
 	hc.putcode();
 	std::cout << std::endl << "按任意键退出" << std::endl;
