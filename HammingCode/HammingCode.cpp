@@ -32,7 +32,7 @@ void HammingCode::combine(unsigned long n, unsigned long m, unsigned long stacki
 	if (arr.size() == m)
 	{
 		// 如果数组大小等于m，表示找到了一个组合
-		arrs[p++] = arr;		
+		arrs[p++] = arr;
 		return;
 	}
 	// 使用回溯法生成组合
@@ -69,14 +69,29 @@ void HammingCode::setoptions()
 			_putch(k);
 		}
 	}
+	k = 8;
+	std::cout << std::endl << "请选择组合法分组【0】或位与法分组【1】: ";
+	while (k != '\r')
+	{
+		k = _getch();
+		if (k == '0' || k == '1')
+		{
+			isCombine = (k == '0');
+			_putch(k);
+		}
+	}
 	if (isEncrypt)
 		std::cout << std::endl << "你选择了编码";
 	else
 		std::cout << std::endl << "你选择了解码";
 	if (isEVEN)
-		std::cout << ",偶校验" << std::endl;
+		std::cout << ",偶校验" ;
 	else
-		std::cout << ",奇校验" << std::endl;
+		std::cout << ",奇校验" ;
+	if (isCombine)
+		std::cout << ",组合法分组" << std::endl;
+	else
+		std::cout << ",位与法分组" << std::endl;
 }
 bool static isPower2(size_t N)//判断N为2的m次方
 {
@@ -87,20 +102,20 @@ bool static isPower2(size_t N)//判断N为2的m次方
 	}
 	return false;
 }
-void HammingCode::getcode() 
+void HammingCode::getcode()
 {
 	vector<bool> incode;
 	int l = 0;
 	int k = 8;
-	std::cout << "请输入二进制【0】或【1】:" << std::endl;
-	std::cout << "0001 0002 0003 0004 0005 0006 0007 0008 0009 0010 0011 0012 0013 0014 0015 0016" << std::endl;
+	std::cout << "请输入二进制【0】或【1】(下行为二进制位数提示):" << std::endl;
+	std::cout << "0004 0008 0012 0016 0020 0024 0028 0032 0036 0040 0044 0048 0052 0056 0060 0064" << std::endl;
 	while (k != '\r')
 	{
 		k = _getch();
 		if (k == '0' || k == '1')
 		{
 			if ((l % 4 == 0) && (l != 0))
-				std::cout << "'";
+				std::cout << ",";
 			_putch(k);
 			l++;
 			k = k - '0';
@@ -168,14 +183,15 @@ void HammingCode::phcode()
 			p = (int)pow(2, i) - 1;
 			Hcode.insert(Hcode.begin() + p, 0);
 		}
-	int l = HcodeLen;
 	std::cout << "预处理的编码:" << std::endl;
+	for (i = 0; i <= Hcode.size() / 4; i++)
+		printf("%04d ", 4 * (i + 1));
+	std::cout << std::endl;
 	for (i = 0; i < Hcode.size(); i++)
 	{
 		std::cout << Hcode[i];
-		l--;
-		if ((l % 4 == 0) && (l != 0))
-			std::cout << "'";
+		if ((i + 1) % 4 == 0)
+			std::cout << ",";
 	}
 	std::cout << std::endl;
 	return;
@@ -249,8 +265,44 @@ void HammingCode::hamming()
 			Hcode[(unsigned __int64)pow(2, i - 1) - 1] = !Hcode[(unsigned __int64)pow(2, i - 1) - 1];
 	delete[] groups;
 	delete[] arrs;
-	if (getEncrypt())//如果是解码
-		correctcode();//纠错
+	if (!getEncrypt())//如果是解码
+		correctcode();//纠错并解码出源信息	
+	return;
+}
+void HammingCode::qhamming()
+{
+	phcode();
+	int k = KcodeLen;
+	int l = HcodeLen;
+	groups = new vector<int>[k];
+	for (int i = 1; i <= l; i++)
+	{
+		int mask = 1;
+		for (int j = 0; j < k; j++)
+		{
+			if (mask & i)
+			{
+				groups[j].push_back(i);
+				Hcode[(unsigned __int64)pow(2, j) - 1] = Hcode[(unsigned __int64)pow(2, j) - 1] ^ Hcode[(unsigned __int64)i - 1];
+			}
+			mask = mask << 1;
+		}
+	}
+	//奇校验最后取反一次
+	if (!isEVEN)
+		for (int i = 1; i <= k; i++)
+			Hcode[(unsigned __int64)pow(2, i - 1) - 1] = !Hcode[(unsigned __int64)pow(2, i - 1) - 1];
+	std::cout << "汉明码分组成员:" << std::endl;
+	for (int i = 0; i < k; i++)
+	{
+		std::cout << i + 1 << "组: ";
+		for (int p = 0; p < groups[i].size(); p++)
+			std::cout << groups[i][p] << ",";
+		std::cout << std::endl;
+	}
+	delete[] groups;
+	if (!getEncrypt())//如果是解码
+		correctcode();//纠错并解码出源信息	
 	return;
 }
 void HammingCode::correctcode()
@@ -290,45 +342,39 @@ void HammingCode::correctcode()
 		break;
 	}
 	Hcode = iHcode;
+	//解码出源信息
+	for (int i = KcodeLen; i > 0; i--)
+	{
+		iHcode.erase(iHcode.begin() + (unsigned __int64)pow(2, i - 1) - 1);
+	}
+	Scode = iHcode;
+	iHcode = Hcode;
 	return;
 }
 void HammingCode::putcode()
 {
 	int i;
-	int l = (int)Hcode.size();
-	std::cout << "汉明码= ";
+	std::cout << "******编码/解码/纠错后信息输出******" << std::endl;
+	std::cout << "源信息:" << std::endl;
+	for (i = 0; i <= Scode.size() / 4; i++)
+		printf("%04d ", 4 * (i + 1));
+	std::cout << std::endl;
+	for (i = 0; i < Scode.size(); i++)
+	{
+		std::cout << Scode[i];
+		if (((i + 1) % 4 == 0) && (i != (Scode.size() - 1)))
+			std::cout << ",";
+	}
+	std::cout << std::endl;
+	std::cout << "汉明码:" << std::endl;
+	for (i = 0; i <= Hcode.size() / 4; i++)
+		printf("%04d ", 4 * (i + 1));
+	std::cout << std::endl;
 	for (i = 0; i < Hcode.size(); i++)
 	{
 		std::cout << Hcode[i];
-		l--;
-		if ((l % 4 == 0) && (l != 0))
-			std::cout << "'";
-	}
-	std::cout << "  源信息= ";
-	if (isEncrypt)
-	{
-		for (i = 0; i < Scode.size(); i++)
-		{
-			std::cout << Scode[i];
-			l--;
-			if ((l % 4 == 0) && (l != 0))
-				std::cout << "'";
-		}
-	}
-	else
-	{
-		for (i = KcodeLen; i > 0; i--)
-		{
-			Hcode.erase(Hcode.begin() + (unsigned __int64)pow(2, i - 1) - 1);
-		}
-		l = (int)Hcode.size();
-		for (i = 0; i < Hcode.size(); i++)
-		{
-			std::cout << Hcode[i];
-			l--;
-			if ((l % 4 == 0) && (l != 0))
-				std::cout << "'";
-		}
+		if ((i + 1) % 4 == 0)
+			std::cout << ",";
 	}
 	return;
 }
@@ -339,6 +385,10 @@ bool HammingCode::getEVEN() const
 bool HammingCode::getEncrypt() const
 {
 	return isEncrypt;
+}
+bool HammingCode::getCombine() const
+{
+	return isCombine;
 }
 int  HammingCode::getScodeLen() const
 {
@@ -354,15 +404,23 @@ int  HammingCode::getHcodeLen() const
 }
 int  main()
 {
-	std::cout << "汉明码(HammingCode)演示程序 v0.03 2024.5.1 leu9981" << std::endl;
-	HammingCode hc;	
-	hc.setoptions();//设置 编码/解码  奇/偶校验
-	hc.getcode();//输入二进制系列	
+	std::cout << "***************************************************************************" << std::endl;
+	std::cout << "   汉明码(HammingCode)教学演示程序 v0.05 2024.5.10 leu9981<hgjsj@qq.com>   " << std::endl;
+	std::cout << "      汉明码编组唐朔飞老师教材讲述方法:组号g[1,k] pow(2,g-1)求组合"		   << std::endl;
+	std::cout << "      另一汉明码编组方式:位置号ofs[1,n+k]二进制第g位为1即为g组成员"		   << std::endl;
+	std::cout << "***************************************************************************" << std::endl;
+	HammingCode hc;
+	hc.setoptions();//设置 编码/解码 奇/偶校验 分组方法
+	hc.getcode();   //输入二进制系列	
 	hc.getcodelen();//求解n k  
 	std::cout << "源信息长度 n=" << hc.getScodeLen() << " 校验位长度 k=" << hc.getKcodeLen() << " 汉明码总长度 n+k=" << hc.getHcodeLen() << std::endl;
-	hc.hamming();//进行 编码/解码
-	hc.putcode();//输出源信息和正确编码
-	std::cout << std::endl << "按任意键退出" << std::endl;
+	if(hc.getCombine())
+		hc.hamming(); //组合法分组 编码/解码/纠错
+	else
+		hc.qhamming();//位与法分组 编码/解码/纠错
+	hc.putcode();//输出正确源信息和汉明码码
+	std::cout << std::endl;	
+	std::cout << "********************************按任意键退出*******************************" << std::endl;
 	int k = _getch();
 	return 0;
 }
