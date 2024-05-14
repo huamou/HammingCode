@@ -283,7 +283,8 @@ void HammingCode::qhamming()
 			if (mask & i)
 			{
 				groups[j].push_back(i);
-				Hcode[(unsigned __int64)pow(2, j) - 1] = Hcode[(unsigned __int64)pow(2, j) - 1] ^ Hcode[(unsigned __int64)i - 1];
+				if((unsigned __int64)pow(2, j)!=i)
+					Hcode[(unsigned __int64)pow(2, j) - 1] = Hcode[(unsigned __int64)pow(2, j) - 1] ^ Hcode[(unsigned __int64)i - 1];
 			}
 			mask = mask << 1;
 		}
@@ -406,21 +407,25 @@ int  main()
 {
 	std::cout << "***************************************************************************" << std::endl;
 	std::cout << "   汉明码(HammingCode)教学演示程序 v0.05 2024.5.10 leu9981<hgjsj@qq.com>   " << std::endl;
-	std::cout << "      汉明码编组唐朔飞老师教材讲述方法:组号g[1,k] pow(2,g-1)求组合"		   << std::endl;
-	std::cout << "      另一汉明码编组方式:位置号ofs[1,n+k]二进制第g位为1即为g组成员"		   << std::endl;
+	std::cout << "      汉明码编组方式一：组号g[1,k] pow(2,g-1)求组合[唐朔飞老师教材]"		   << std::endl;
+	std::cout << "      汉明码编组方式二：位置号ofs[1,n+k]  二进制第g位为1即为g组成员"		   << std::endl;
 	std::cout << "***************************************************************************" << std::endl;
-	HammingCode hc;
-	hc.setoptions();//设置 编码/解码 奇/偶校验 分组方法
-	hc.getcode();   //输入二进制系列	
-	hc.getcodelen();//求解n k  
-	std::cout << "源信息长度 n=" << hc.getScodeLen() << " 校验位长度 k=" << hc.getKcodeLen() << " 汉明码总长度 n+k=" << hc.getHcodeLen() << std::endl;
-	if(hc.getCombine())
-		hc.hamming(); //组合法分组 编码/解码/纠错
-	else
-		hc.qhamming();//位与法分组 编码/解码/纠错
-	hc.putcode();//输出正确源信息和汉明码码
-	std::cout << std::endl;	
-	std::cout << "********************************按任意键退出*******************************" << std::endl;
-	int k = _getch();
+	int k = 0;
+	while (k != 27)
+	{
+		HammingCode hc;
+		hc.setoptions();//设置 编码/解码 奇/偶校验 分组方法
+		hc.getcode();   //输入二进制系列	
+		hc.getcodelen();//求解n k  
+		std::cout << "源信息长度 n=" << hc.getScodeLen() << " 校验位长度 k=" << hc.getKcodeLen() << " 汉明码总长度 n+k=" << hc.getHcodeLen() << std::endl;
+		if (hc.getCombine())
+			hc.hamming(); //组合法分组 编码/解码/纠错
+		else
+			hc.qhamming();//位与法分组 编码/解码/纠错
+		hc.putcode();//输出正确源信息和汉明码码
+		std::cout << std::endl;
+		std::cout << "***************************按ESC退出,其他键继续****************************" << std::endl;
+		k = _getch();
+	}
 	return 0;
 }
