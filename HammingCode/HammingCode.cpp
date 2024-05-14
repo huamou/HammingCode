@@ -239,7 +239,7 @@ void HammingCode::hamming()
 			std::cout << ":" << s << std::endl;
 			for (int i = 0; i < arrs[g].size(); i++)
 			{
-				if (gc > 1)
+				if ((unsigned __int64)pow(2, arrs[g][i] - 1)!=s)//(gc > 1)
 					Hcode[(unsigned __int64)pow(2, arrs[g][i] - 1) - 1] = Hcode[(unsigned __int64)pow(2, arrs[g][i] - 1) - 1] ^ Hcode[s - 1];
 				groups[arrs[g][i] - 1].push_back((int)s);
 			}
